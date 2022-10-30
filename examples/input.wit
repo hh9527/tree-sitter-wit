@@ -1,3 +1,39 @@
-// awake-sink: func(id: u32) -> result<_, u32>
-awake-sink: func(a: u32, b: u32) -> (a: u32, b: u32)
-// awake-sink2: func(id: u32) -> result<string>
+use * from abc
+use { a as b } from abc
+
+type t1 = u32
+
+record r1 {
+  a: u32,
+  b: u32,
+}
+
+variant v1 {
+  t1(u32),
+  t2,
+  t3(option<u32>),
+}
+
+flags fl1 {
+  a,
+  b,
+}
+
+enum e1 {
+  a,
+  b,
+}
+
+union e1 {
+  u32,
+  option<string>,
+}
+
+f1: func(a: u32, b: u32) -> (a: u32, b: u32)
+f2: func(a: future<x>, b: stream<_, u32>) -> (a: u32, b: u32)
+
+interface ix1 {
+  static f1: func(a: u32, b: u32) -> (a: u32, b: u32)
+  f2: func(a: future<x>, b: stream<_, u32>) -> (a: u32, b: u32)
+}
+

@@ -1,10 +1,12 @@
 /// <reference types="tree-sitter-cli/dsl" />
 
-const csl = rule => optional(seq(
+const csl1 = rule => seq(
   rule,
   repeat(seq(",", rule)),
   optional(","),
-));
+);
+
+const csl0 = rule => optional(csl1(rule));
 
 module.exports = grammar({
   name: "wit",
@@ -18,7 +20,7 @@ module.exports = grammar({
     _whitespace: _ => /[ \n\r\t]/,
     line_comment: _ => /\/\/.*\n/,
     block_comment: _ => /\/\*([^*]|\*[^\/])*\*\//,
-    ident: _ => /[a-z][0-9a-z]*(-[a-z][0-9a-z]*)*/,
+    ident: _ => /%?[a-z][0-9a-z]*(-[a-z][0-9a-z]*)*/,
     unit: _ => "_",
     star: _ => "*",
     ty: $ => choice(
@@ -39,9 +41,11 @@ module.exports = grammar({
       $.result,
       $.tuple,
       $.list,
+      $.future,
+      $.stream,
       $.ident,
     ),
-
+    
     item: $ => choice(
       $.item_use,
       $.item_type,
@@ -51,24 +55,29 @@ module.exports = grammar({
       $.item_enum,
       $.item_union,
       $.item_func,
+      $.item_interface,
     ),
 
     named_ty: $ => seq(field("name", $.ident), ":", field("ty", $.ty)),
-    fields: $ => seq("{", csl($.named_ty), "}"),
-    args: $ => seq("(", csl($.named_ty), ")"),
-
-    option: $ => seq("option", "<", $.ty, ">"),
-    tuple: $ => seq("tuple", "<", csl($.ty), ">"),
-    list: $ => seq("list", "<", $.ty, ">"),
-    result: $ => seq(
-      "result",
-      optional(seq(
-        "<",
-        choice($.ty, $.unit),
-        optional(seq(",", $.ty)),
-        ">"
-      ))
+    fields: $ => seq("{", csl0($.named_ty), "}"),
+    args: $ => seq("(", csl0($.named_ty), ")"),
+    tp1: $ => seq("<", $.ty, ">"),
+    tp2: $ => seq(
+      "<",
+      choice(
+        seq($.unit, ",", $.ty),
+        seq($.ty, optional(seq(",", $.ty))),
+      ),
+      ">"
     ),
+    tps: $ => seq("<", csl1($.ty), ">"),
+
+    option: $ => seq("option", $.tp1),
+    list: $ => seq("list", $.tp1),
+    result: $ => seq("result", optional($.tp2)),
+    tuple: $ => seq("tuple", $.tps),
+    future: $ => seq("future", optional($.tp1)),
+    stream: $ => seq("stream", optional($.tp2)),
     
     use_item: $ => seq(
       optional(seq(
@@ -77,7 +86,7 @@ module.exports = grammar({
       )),
       field("name", $.ident)
     ),
-    use_items: $ => seq("{", csl($.use_item), "}"),
+    use_items: $ => seq("{", csl0($.use_item), "}"),
     item_use: $ => seq(
       "use",
       choice($.star, $.use_items),
@@ -98,48 +107,58 @@ module.exports = grammar({
       $.fields,
     ),
 
-    flags: $ => seq("{", csl($.ident), "}"),
+    flags: $ => seq("{", csl0($.ident), "}"),
     item_flags: $ => seq(
       "flags",
       field("name", $.ident),
       $.flags,
     ),
 
+    variant_payload: $ => seq("(", $.ty, ")"),
     variant_item: $ => seq(
       field("tag", $.ident),
-      optional(seq("(", $.ty, ")"))
+      optional($.variant_payload),
     ),
-    variant_items: $ => seq("{", csl($.variant_item), "}"),
+    variant_items: $ => seq("{", csl0($.variant_item), "}"),
     item_variant: $ => seq(
       "variant",
       field("name", $.ident),
       $.variant_items,
     ),
 
-    enum_items: $ => seq("{", csl($.ident), "}"),
+    enum_items: $ => seq("{", csl0($.ident), "}"),
     item_enum: $ => seq(
       "enum",
       field("name", $.ident),
       $.enum_items,
     ),
 
-    union_items: $ => seq("{", csl($.ty), "}"),
+    union_items: $ => seq("{", csl0($.ty), "}"),
     item_union: $ => seq(
       "union",
       field("name", $.ident),
       $.union_items,
     ),
 
-    input: $ => $.args,
-    output: $ => choice($.args, $.ty),
-    item_func: $ => seq(
+    _func: $ => seq(
       field("name", $.ident),
       ":",
-      optional("async"),
       "func",
       $.input,
       "->",
       $.output,
+    ),
+
+    input: $ => $.args,
+    output: $ => choice($.args, $.ty),
+    item_func: $ => $._func,
+    
+    method: $ => seq(optional("static"), $._func),
+    interface_items: $ => seq("{", repeat($.method), "}"),
+    item_interface: $ => seq(
+      "interface",
+      field("name", $.ident),
+      $.interface_items,
     ),
   },
 });
