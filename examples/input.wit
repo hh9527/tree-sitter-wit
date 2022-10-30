@@ -31,8 +31,10 @@ union e1 {
 f1: func(a: u32, b: u32) -> (a: u32, b: u32)
 f2: func(a: future<x>, b: stream<_, u32>) -> (a: u32, b: u32)
 
-interface ix1 {
+resource ix1 {
   static f1: func(a: u32, b: u32) -> (a: u32, b: u32)
   f2: func(a: future<x>, b: stream<_, u32>) -> (a: u32, b: u32)
 }
+
+resource ix2
 

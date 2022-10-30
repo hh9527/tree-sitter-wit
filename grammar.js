@@ -55,7 +55,8 @@ module.exports = grammar({
       $.item_enum,
       $.item_union,
       $.item_func,
-      $.item_interface,
+      $.item_resource,
+      // $.item_interface,
     ),
 
     named_ty: $ => seq(field("name", $.ident), ":", field("ty", $.ty)),
@@ -154,11 +155,11 @@ module.exports = grammar({
     item_func: $ => $._func,
     
     method: $ => seq(optional("static"), $._func),
-    interface_items: $ => seq("{", repeat($.method), "}"),
-    item_interface: $ => seq(
-      "interface",
+    resource_items: $ => seq("{", repeat($.method), "}"),
+    item_resource: $ => seq(
+      "resource",
       field("name", $.ident),
-      $.interface_items,
+      optional($.resource_items),
     ),
   },
 });

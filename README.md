@@ -9,14 +9,14 @@ An IDL for WebAssembly Component Model
 - follow the status of [wit-bindgen](https://github.com/bytecodealliance/wit-bindgen)
 - verified with [helix-editor](https://github.com/helix-editor/helix)
 
-## TODO
+## FEATURES
 
-- [ ] `interface`
-  - wait for wit-bindgen ready
-- [ ] `world` 
-  - wait for wit-bindgen ready
-- [ ] `future`
-  - wait for wit-bindgen ready
-- [ ] `stream`
-  - wait for wit-bindgen ready
+- [X] `u8`, ...
+- [X] `option`, `result`, `list`, `tuple`
+- [X] `future`, `stream`
+- [X] `record`, `enum`, `flags`, `variant`, `union`
+- [X] `func`
+- [X] `resource`
+- [ ] `interface`: wait for upstream ready
+- [ ] `world`: wait for upstream ready
 

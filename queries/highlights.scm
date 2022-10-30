@@ -8,7 +8,7 @@
 (item_flags name: (ident) @type)
 (item_enum name: (ident) @type)
 (item_union name: (ident) @type)
-(item_interface name: (ident) @type)
+(item_resource name: (ident) @type)
 
 (item_use from: (ident) @namespace)
 (use_item name: (ident) @type)
@@ -50,7 +50,7 @@
   "enum"
   "union"
   "type"
-  "interface"
+  "resource"
 ] @keyword.storage.type
 
 "func" @keyword

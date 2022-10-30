@@ -1,7 +1,4 @@
 [
-  ; (tp1)
-  ; (tp2)
-  ; (tps)
   (use_items)
   (fields)
   (variant_items)
@@ -10,7 +7,7 @@
   (enum_items)
   (union_items)
   (args)
-  (interface_items)
+  (resource_items)
 ] @indent
 
 [ "}" ")" ] @outdent
