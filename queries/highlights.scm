@@ -2,6 +2,14 @@
 (block_comment) @comment.block
 (ty (ident) @type)
 
+(item_type name: (ident) @type)
+(item_record name: (ident) @type)
+(item_variant name: (ident) @type)
+(item_flags name: (ident) @type)
+(item_enum name: (ident) @type)
+(item_union name: (ident) @type)
+(item_interface name: (ident) @type)
+
 (item_use from: (ident) @namespace)
 (use_item name: (ident) @type)
 (item_func name: (ident) @function)

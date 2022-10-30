@@ -1,8 +1,7 @@
 use * from abc
 use { a as b } from abc
-
+use { sdf as y } from abc
 type t1 = u32
-
 record r1 {
   a: u32,
   b: u32,
