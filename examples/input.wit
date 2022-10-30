@@ -1,0 +1,3 @@
+// awake-sink: func(id: u32) -> result<_, u32>
+awake-sink: func(a: u32, b: u32) -> (a: u32, b: u32)
+// awake-sink2: func(id: u32) -> result<string>
