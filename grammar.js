@@ -47,16 +47,8 @@ module.exports = grammar({
     ),
     
     item: $ => choice(
-      $.item_use,
-      $.item_type,
-      $.item_record,
-      $.item_flags,
-      $.item_variant,
-      $.item_enum,
-      $.item_union,
-      $.item_func,
-      $.item_resource,
-      // $.item_interface,
+      $.item_world,
+      $.item_interface,
     ),
 
     named_ty: $ => seq(field("name", $.ident), ":", field("ty", $.ty)),
@@ -141,9 +133,7 @@ module.exports = grammar({
       $.union_items,
     ),
 
-    _func: $ => seq(
-      field("name", $.ident),
-      ":",
+    func_type: $ => seq(
       "func",
       $.input,
       "->",
@@ -152,14 +142,65 @@ module.exports = grammar({
 
     input: $ => $.args,
     output: $ => choice($.args, $.ty),
-    item_func: $ => $._func,
     
-    method: $ => seq(optional("static"), $._func),
+    item_func: $ => seq(
+      field('name', $.ident),
+      ':',
+      $.func_type,
+    ),
+    
+    method: $ => seq(optional("static"), $.item_func),
     resource_items: $ => seq("{", repeat($.method), "}"),
     item_resource: $ => seq(
       "resource",
       field("name", $.ident),
       optional($.resource_items),
+    ),
+    
+    item_interface: $ => seq(
+      'interface',
+      $.ident,
+      optional($.strlit),
+      $.interface_items,
+    ),
+    
+    item_world: $ => seq(
+      'world',
+      $.ident,
+      world_items,
+    ),
+    
+    world_items: $ => seq('{', repeat($.world_item), '}'),
+    world_item: $ => seq(
+      choice('export', 'import'),
+      $.ident,
+      ':',
+      $.extern_type,
+    ),
+    
+    extern_type: $ => choice(
+      $.ty,
+      $.func_type,
+      $.interface_type,
+    ),
+    
+    interface_type: $ => seq(
+      'interface',
+      $.interface_items,
+    ),
+    
+    interface_items: $ => seq('{', repeat($.interface_item), '}'),
+    
+    interface_item: $ => choice(
+      $.item_resource,
+      $.item_variant,
+      $.item_record,
+      $.item_union,
+      $.item_flags,
+      $.item_enum,
+      $.item_type,
+      $.item_use,
+      $.item_func,
     ),
   },
 });
